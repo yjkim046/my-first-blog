@@ -1,38 +1,44 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
+    {% if nickname %}
+        You are {{ nickname }} in this thread.
+    {% else %}
+        I don't know who you are
+    {% endif %}<br><br>
     <div class="post">
+        <h3>{{ post.title }}</h3>
         {% if post.published_date %}
             <div class="date">
                 {{ post.published_date }}
             </div>
         {% endif %}
-        {{ post.nickname }}
-        <!--<a class="btn btn-default" href="{% url 'post_edit' pk=post.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>-->
-        <h1>{{ post.title }}</h1>
-        <p>{{ post.text|linebreaksbr }}</p>
+        {{ post.nickname }} wrote:
+        <p class="comment">{{ post.text|linebreaksbr }}</p>
         <a href="{% url 'post_reply' pk=post.pk %}">Reply</a>
         <a href="{% url 'post_edit' pk=post.pk %}">Edit</a>
         <a href="{% url 'thread' pk=post.pk %}">Thread</a>
     </div>
 <hr>
 {% for comment in post.comments.all %}
-    {% if user.is_authenticated or comment.approved_comment %}
+    {% if user.is_authenticated %}
     <div class="comment">
-        <div class="date">
-            {{ comment.created_date }}
-            {% if not comment.approved_comment %}
-                <a class="btn btn-default" href="{% url 'comment_remove' pk=comment.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
-                <a class="btn btn-default" href="{% url 'comment_approve' pk=comment.pk %}"><span class="glyphicon glyphicon-ok"></span></a>
-            {% endif %}
-        </div>
         #{{ comment.id }}
-        <strong>{{ comment.nickname }}</strong>
+        {% if comment.author == user.username %} 
+            <strong>{{ comment.nickname }}</strong>
+            <div class="date">
+                {{ comment.created_date }}
+                <a href="{% url 'comment_remove' pk=comment.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
+            </div>
+        {% else %}
+            {{ comment.nickname }}
+            <div class="date">
+                {{ comment.created_date }}
+            </div>
+        {% endif %}
         <p>{{ comment.text|linebreaks }}</p>
     </div>
     {% endif %}
-{% empty %}
-    <p>No comments here yet :(</p>
 {% endfor %}
 {% if form %}
     <form action="{% url 'add_comment_to_post' pk=post.pk %}" method="POST">
@@ -43,5 +49,4 @@
 {% else %}
     CommentForm is not found!
 {% endif %}
-</form>
 {% endblock %}

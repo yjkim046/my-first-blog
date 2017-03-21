@@ -7,7 +7,7 @@
         <tr>
         <td>{{ post.id }}&nbsp</td>
         <td>{{ post.thread_no }}&nbsp</td>
-        <td><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }} [{{ post.approved_comments.count }}]</a>&nbsp</td>
+        <td><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }} [{{ post.comments.count }}]</a>&nbsp</td>
         <td>{{ post.author }}&nbsp</td>
         <td>{{ post.nickname }}&nbsp</td>
         <td>{{ post.created_date|date:"m/d/Y"}}&nbsp</td>
