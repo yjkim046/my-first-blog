@@ -3,7 +3,7 @@
 {% block content %}
     <p style="background-color:#EBCFA2;">
     {% if nickname %}
-        You are {{ nickname }} in this thread.
+        You are {{ nickname }} (id:{{ user.id }}) in this thread.
     {% else %}
         I don't know who you are
     {% endif %}
