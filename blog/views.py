@@ -100,8 +100,6 @@ def add_comment_to_post(request, pk):
             comment.nickname = Nickname.objects.get(aid=(comment.author.id-1)%r+1,tno=(post.thread_no-1)%c+1).name
             comment.save()
             return redirect('post_detail', pk=post.pk)
-    else:
-        print 'method is not POST'
 
 @login_required
 def comment_remove(request, pk):
