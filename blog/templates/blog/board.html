@@ -5,7 +5,7 @@
     <table>
     {% for post in posts %}
         <tr>
-        <td>{{ post.id }}&nbsp</td>
+        <td>#{{ post.id }}&nbsp</td>
         <td>{{ post.thread_no }}&nbsp</td>
         <td><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }} [{{ post.comments.count }}]</a>&nbsp</td>
         <td>{{ post.author }}&nbsp</td>

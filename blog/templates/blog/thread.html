@@ -1,52 +1,43 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
+    <p style="background-color:#EBCFA2;">
     {% if nickname %}
         You are {{ nickname }} in this thread.
     {% else %}
         I don't know who you are
     {% endif %}
+    </p>
     {% for post in posts %}
         <div class="post">
-            <h3><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h3>
-            <div class="date">
-                {{ post.published_date }}
-            </div>
-            {% if post.author == user.username %}
-                <strong>{{ post.nickname }}</strong>
-            {% else %}
-                {{ post.nickname }}
+            <a href="{% url 'post_detail' pk=post.pk %}"><h3>{{ post.title }}</h3></a>
+            {% if post.published_date %}
+                <div class="date">
+                    {{ post.published_date }}
+                </div>
             {% endif %}
-            wrote:
-            <p class="comment">{{ post.text|linebreaksbr }}</p>
-            {% for comment in post.comments.all %}
-                {% if user.is_authenticated %}
-                    <div class="comment">
+            {{ post.nickname }} wrote:
+            <p class="content">{{ post.text|linebreaksbr }}</p>
+        </div>
+        {% for comment in post.comments.all %}
+            {% if user.is_authenticated %}
+            <div class="comment-header">
+                #{{ comment.id }} by
+                {% if comment.author == user.username %}
+                <strong>{{ comment.nickname }}</strong>
                     <div class="date">
-                    {{ comment.created_date }}
-                        {% if comment.author == user.username %}
-                            <a href="{% url 'comment_remove' pk=comment.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
-                        {% endif %}
+                        {{ comment.created_date }}
+                        <a href="{% url 'comment_remove' pk=comment.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
                     </div>
-                    #{{ comment.id }}
-                    {% if comment.author == user.username %}
-                        <strong>{{ comment.nickname }}</strong>
-                    {% else %}
-                        {{ comment.nickname }}
-                    {% endif %}
-                    <p>{{ comment.text|linebreaks }}</p>
+                {% else %}
+                    {{ comment.nickname }}
+                    <div class="date">
+                        {{ comment.created_date }}
                     </div>
                 {% endif %}
-            {% endfor %}
-            {% if form %}
-                <form action="{% url 'add_comment_to_post' pk=post.pk %}" method="POST">
-                    {% csrf_token %}
-                    Comment: <input type='text' size=80 name="text" required>
-                    <input type='submit' value='Save'>
-                </form> 
-            {% else %}
-                CommentForm is not found!
+            </div>
+            <div class="comment">{{ comment.text|linebreaks }}</div>
             {% endif %}
-        </div>
+        {% endfor %}
     {% endfor %}
 {% endblock content %}

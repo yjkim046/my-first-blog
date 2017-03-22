@@ -1,11 +1,13 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
+    <p style="background-color:#EBCFA2;">
     {% if nickname %}
         You are {{ nickname }} in this thread.
     {% else %}
         I don't know who you are
-    {% endif %}<br><br>
+    {% endif %}
+    </p>
     <div class="post">
         <h3>{{ post.title }}</h3>
         {% if post.published_date %}
@@ -14,7 +16,7 @@
             </div>
         {% endif %}
         {{ post.nickname }} wrote:
-        <p class="comment">{{ post.text|linebreaksbr }}</p>
+        <p class="content">{{ post.text|linebreaksbr }}</p>
         <a href="{% url 'post_reply' pk=post.pk %}">Reply</a>
         <a href="{% url 'post_edit' pk=post.pk %}">Edit</a>
         <a href="{% url 'thread' pk=post.pk %}">Thread</a>
@@ -22,8 +24,8 @@
 <hr>
 {% for comment in post.comments.all %}
     {% if user.is_authenticated %}
-    <div class="comment">
-        #{{ comment.id }}
+    <div class="comment-header">
+        #{{ comment.id }} by
         {% if comment.author == user.username %} 
             <strong>{{ comment.nickname }}</strong>
             <div class="date">
@@ -36,8 +38,8 @@
                 {{ comment.created_date }}
             </div>
         {% endif %}
-        <p>{{ comment.text|linebreaks }}</p>
     </div>
+    <div class="comment">{{ comment.text|linebreaks }}</div>
     {% endif %}
 {% endfor %}
 {% if form %}

@@ -16,15 +16,15 @@ def thread(request, pk):
     posts = Post.objects.filter(thread_no=post.thread_no).order_by('created_date')
     r = Nickname.objects.aggregate(Max('aid'))['aid__max']
     c = Nickname.objects.aggregate(Max('tno'))['tno__max'] 
-    nickname = Nickname.objects.get(aid=request.user.id%r,tno=post.thread_no%c).name
+    nickname = Nickname.objects.get(aid=(request.user.id-1)%r+1,tno=(post.thread_no-1)%c+1).name
     return render(request, 'blog/thread.html', {'posts':posts, 'nickname':nickname, 'form':CommentForm()})
 
 @login_required
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
     r = Nickname.objects.aggregate(Max('aid'))['aid__max']
-    c = Nickname.objects.aggregate(Max('tno'))['tno__max'] 
-    nickname = Nickname.objects.get(aid=request.user.id%r,tno=post.thread_no%c).name
+    c = Nickname.objects.aggregate(Max('tno'))['tno__max']
+    nickname = Nickname.objects.get(aid=(request.user.id-1)%r+1,tno=(post.thread_no-1)%c+1).name
     return render(request, 'blog/post_detail.html',{'post':post, 'nickname':nickname, 'user':request.user, 'form':CommentForm()})
 
 @login_required
@@ -42,7 +42,7 @@ def post_new(request):
                 post.thread_no = Post.objects.aggregate(Max('thread_no'))['thread_no__max']+1
             r = Nickname.objects.aggregate(Max('aid'))['aid__max']
             c = Nickname.objects.aggregate(Max('tno'))['tno__max'] 
-            post.nickname = Nickname.objects.get(aid=post.author.id%r,tno=post.thread_no%c).name
+            post.nickname = Nickname.objects.get(aid=(post.author.id-1)%r+1,tno=(post.thread_no-1)%c+1).name
             post.save()
             return redirect('post_detail', pk=post.pk)
     else:
@@ -60,7 +60,7 @@ def post_edit(request, pk):
             post.published_date = timezone.now()
             r = Nickname.objects.aggregate(Max('aid'))['aid__max']
             c = Nickname.objects.aggregate(Max('tno'))['tno__max'] 
-            post.nickname = Nickname.objects.get(aid=post.author.id%r,tno=post.thread_no%c).name
+            post.nickname = Nickname.objects.get(aid=(post.author.id-1)%r+1,tno=(post.thread_no-1)%c+1).name
             post.save()
             return redirect('post_detail', pk=post.pk)
     else:
@@ -79,7 +79,7 @@ def post_reply(request, pk):
             post.thread_no = parent_post.thread_no
             r = Nickname.objects.aggregate(Max('aid'))['aid__max']
             c = Nickname.objects.aggregate(Max('tno'))['tno__max'] 
-            post.nickname = Nickname.objects.get(aid=post.author.id%r,tno=post.thread_no%c).name
+            post.nickname = Nickname.objects.get(aid=(post.author.id-1)%r+1,tno=(post.thread_no-1)%c+1).name
             post.save()
             return redirect('post_detail', pk=post.pk)
     else:
@@ -97,7 +97,7 @@ def add_comment_to_post(request, pk):
             comment.post = post
             r = Nickname.objects.aggregate(Max('aid'))['aid__max']
             c = Nickname.objects.aggregate(Max('tno'))['tno__max'] 
-            comment.nickname = Nickname.objects.get(aid=comment.author.id%r,tno=post.thread_no%c).name
+            comment.nickname = Nickname.objects.get(aid=(comment.author.id-1)%r+1,tno=(post.thread_no-1)%c+1).name
             comment.save()
             return redirect('post_detail', pk=post.pk)
     else:
