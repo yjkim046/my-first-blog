@@ -2,8 +2,7 @@ from django.db import models
 from django.utils import timezone
 
 class Nickname(models.Model):
-    aid = models.IntegerField(default=1)
-    tno = models.IntegerField(default=1)
+    nid = models.IntegerField(default=1)
     name = models.CharField(max_length=200)
 
 class Post(models.Model):

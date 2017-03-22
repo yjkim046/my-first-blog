@@ -3,7 +3,7 @@
 {% block content %}
     <p style="background-color:#EBCFA2;">
     {% if nickname %}
-        You are {{ nickname }} (id:{{ user.id }}) in this thread.
+        You are {{ nickname }} in this thread.
     {% else %}
         I don't know who you are
     {% endif %}
@@ -18,7 +18,11 @@
         {{ post.nickname }} wrote:
         <p class="content">{{ post.text|linebreaksbr }}</p>
         <a href="{% url 'post_reply' pk=post.pk %}">Reply</a>
-        <a href="{% url 'post_edit' pk=post.pk %}">Edit</a>
+        {% if post.author == user.username %}
+            <a href="{% url 'post_edit' pk=post.pk %}">Edit</a>
+        {% else %}
+            <span style="color:#dddddd">Edit</span>
+        {% endif %}
         <a href="{% url 'thread' pk=post.pk %}">Thread</a>
     </div>
 <hr>

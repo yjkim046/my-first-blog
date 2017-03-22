@@ -1,8 +1,28 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
-    ID Thread Subject Author Nickname Created Published
+    <style>
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+    td, th {
+        border: 1px solid #dddddd;
+        text-align: center;
+        padding: 8px;
+    }
+    </style>
     <table>
+    <tr>
+        <th>Article ID
+        <th>Thread
+        <th>Subject
+        <th>Author
+        <th>Nickname
+        <th>Created
+        <th>Published
+    </tr>
     {% for post in posts %}
         <tr>
         <td>#{{ post.id }}&nbsp</td>
