@@ -63,3 +63,7 @@ h2, h3, h4 {
 .highlightme{
     background-color:#FFFF00;
 }
+.comment_id{
+    cursor:pointer;
+    color:#2a6496;
+}
