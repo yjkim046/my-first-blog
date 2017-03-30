@@ -86,8 +86,23 @@ def post_reply(request, pk):
             post.save()
             return redirect('post_detail', pk=post.pk)
     else:
-        form = PostForm()
-        return render(request, 'blog/post_reply.html', {'form': form})
+        parent_text = '> '+parent_post.nickname+' wrote:\n-----------------------\n'+parent_post.text
+        initial_text = '\n\n'+'\n> '.join(parent_text.splitlines()) 
+        form = PostForm(initial={'title':'RE: '+parent_post.title, 'text':initial_text})
+        return render(request, 'blog/post_edit.html', {'form': form})
+
+@login_required
+def post_delete(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    post.delete()
+    return redirect('/')
+
+@login_required
+def post_recommend(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    post.num_recommendation+=1 
+    post.save() 
+    return redirect('post_detail', pk=post.pk)
 
 @login_required
 def add_comment_to_post(request, pk):
@@ -95,20 +110,26 @@ def add_comment_to_post(request, pk):
     if request.method == "POST":
         form = CommentForm(request.POST)
         if form.is_valid():
+            post.comment_cnt+=1
             comment = form.save(commit=False)
             comment.author = request.user
             comment.post = post
+            comment.within_post_id = post.comment_cnt
             max_nid = Nickname.objects.aggregate(Max('nid'))['nid__max']
             nickname = Nickname.objects.get(nid=(request.user.id+3*post.thread_no)%max_nid+1).name
             if request.user.id>max_nid:
                 nickname = nickname + str(request.user.id/max_nid+1)
             comment.nickname = nickname
             comment.save()
+            post.save()
             return redirect('post_detail', pk=post.pk)
 
 @login_required
 def comment_remove(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
-    post_pk = comment.post.pk
+    post = comment.post
+    if comment.within_post_id==post.comment_cnt:
+        post.comment_cnt-=1 
+        post.save()
     comment.delete()
-    return redirect('post_detail', pk=post_pk)
+    return redirect('post_detail', pk=post.pk)

@@ -8,11 +8,13 @@ class Nickname(models.Model):
 class Post(models.Model):
     author = models.ForeignKey('auth.User')
     thread_no = models.IntegerField(default=1)
+    comment_cnt = models.IntegerField(default=0)
     nickname = models.CharField(max_length=200, null=True)
     title = models.CharField(max_length=200)
     text = models.TextField()
     created_date = models.DateTimeField(default=timezone.now)
     published_date = models.DateTimeField(blank=True, null=True)
+    num_recommendation = models.IntegerField(default=0)
 
     def publish(self):
         self.published_date = timezone.now()
@@ -26,6 +28,7 @@ class Post(models.Model):
 
 class Comment(models.Model):
     post = models.ForeignKey('blog.Post', related_name='comments')
+    within_post_id = models.IntegerField(default=1) 
     author = models.CharField(max_length=200)
     nickname = models.CharField(max_length=200, null=True)
     text = models.TextField()

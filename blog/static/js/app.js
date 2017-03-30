@@ -10,7 +10,7 @@ django.jQuery = jQuery.noConflict(true);
         			return;
         		var inputElm = $('#comment-form input[type=text]');
         		var orgVal = inputElm.val();
-        		var newVal = orgVal == '' ? cNum : orgVal + cNum
+        		var newVal = orgVal == '' ? cNum : orgVal + ',' + cNum
         		inputElm.val(newVal);
         });
     });

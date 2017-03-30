@@ -10,33 +10,27 @@
     </p>
     {% for post in posts %}
         <div class="post">
-            <a href="{% url 'post_detail' pk=post.pk %}"><h3>{{ post.title }}</h3></a>
+            <a href="{% url 'post_detail' pk=post.pk %}"><h3>#{{ post.id }} {{ post.title }}</h3></a>
             {% if post.published_date %}
                 <div class="date">
-                    {{ post.published_date }}
+                    {{ post.published_date|date:"M d,f a" }}
                 </div>
             {% endif %}
             {{ post.nickname }} wrote:
-            <p class="content">{{ post.text|linebreaksbr }}</p>
+            <p class="content">{% autoescape off %}{{ post.text|linebreaksbr }}{% endautoescape %}</p>
         </div>
         {% for comment in post.comments.all %}
             {% if user.is_authenticated %}
             <div class="comment-header">
-                #{{ comment.id }} by
-                {% if comment.author == user.username %}
-                <strong>{{ comment.nickname }}</strong>
-                    <div class="date">
-                        {{ comment.created_date }}
+                #{{ comment.within_post_id }} by {{ comment.nickname }}
+                <div class="date">
+                    {{ comment.created_date|date:"M d,f a" }}
+                    {% if comment.author == user.username %}
                         <a href="{% url 'comment_remove' pk=comment.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
-                    </div>
-                {% else %}
-                    {{ comment.nickname }}
-                    <div class="date">
-                        {{ comment.created_date }}
-                    </div>
-                {% endif %}
+                    {% endif %}
+                </div>
             </div>
-            <div class="comment">{{ comment.text|linebreaks }}</div>
+            <div class="comment">{% autoescape off %}{{ comment.text|linebreaks }}{% endautoescape %}</div>
             {% endif %}
         {% endfor %}
     {% endfor %}

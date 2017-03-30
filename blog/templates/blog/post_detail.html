@@ -9,48 +9,53 @@
     {% endif %}
     </p>
     <div class="post">
-        <h3>{{ post.title }}</h3>
+        <h3>#{{ post.id }} {{ post.title }}</h3>
         {% if post.published_date %}
             <div class="date">
-                {{ post.published_date }}
+                {{ post.published_date|date:"M d,f a" }}
             </div>
         {% endif %}
+        <div class="date"> Rec:{{ post.num_recommendation }}&nbsp</div>
         {{ post.nickname }} wrote:
-        <p class="content">{{ post.text|linebreaksbr }}</p>
+        <p class="content">{% autoescape off %}{{ post.text|linebreaksbr }}{% endautoescape %}</p>
         <a href="{% url 'post_reply' pk=post.pk %}">Reply</a>
-        {% if post.author == user.username %}
+        {% if post.author.id == user.id %}
             <a href="{% url 'post_edit' pk=post.pk %}">Edit</a>
         {% else %}
             <span style="color:#dddddd">Edit</span>
         {% endif %}
         <a href="{% url 'thread' pk=post.pk %}">Thread</a>
+        {% if post.author.id == user.id %}
+            <a onclick="return confirm('Are you sure that you want to delete this post?');" href="{% url 'post_delete' pk=post.pk %}">Delete</a>
+        {% else %}
+            <span style="color:#dddddd">Delete</span>
+        {% endif %}
+        {% if post.author.id == user.id %}
+            <span style="color:#dddddd">Recommend</span>
+        {% else %}
+            <a href="{% url 'post_recommend' pk=post.pk %}">Recommend</a>
+        {% endif %}
     </div>
 <hr>
 {% for comment in post.comments.all %}
     {% if user.is_authenticated %}
     <div class="comment-header">
-        <span class="comment_id"> #{{ comment.id }} </span>
-        by
-        {% if comment.author == user.username %} 
-            <strong>{{ comment.nickname }}</strong>
-            <div class="date">
-                {{ comment.created_date }}
+        <span class="comment_id"> #{{ comment.within_post_id }} </span>
+        by {{ comment.nickname }}
+        <div class="date">
+            {{ comment.created_date|date:"M d,f a" }}
+            {% if comment.author == user.username %} 
                 <a href="{% url 'comment_remove' pk=comment.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
-            </div>
-        {% else %}
-            {{ comment.nickname }}
-            <div class="date">
-                {{ comment.created_date }}
-            </div>
-        {% endif %}
+            {% endif %}
+        </div>
     </div>
-    <div class="comment">{{ comment.text|linebreaks }}</div>
+    <div class="comment">{% autoescape off %}{{ comment.text|linebreaks }}{% endautoescape %}</div>
     {% endif %}
 {% endfor %}
 {% if form %}
     <form id="comment-form" action="{% url 'add_comment_to_post' pk=post.pk %}" method="POST">
     {% csrf_token %}
-    Comment: <input type='text' size=80 name="text" required>
+    Comment: <input type='text' style="width: 80%" name="text" required>
     <input type='submit' value='Save'>
     </form> 
 {% else %}
