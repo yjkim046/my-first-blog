@@ -15,6 +15,7 @@
                 {{ post.published_date|date:"M d,f a" }}
             </div>
         {% endif %}
+        <div class="date"> Read:{{ post.num_read }}&nbsp</div>
         <div class="date"> Rec:{{ post.num_recommendation }}&nbsp</div>
         {{ post.nickname }} wrote:
         <p class="content">{% autoescape off %}{{ post.text|linebreaksbr }}{% endautoescape %}</p>

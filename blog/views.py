@@ -27,6 +27,8 @@ def post_detail(request, pk):
     nickname = Nickname.objects.get(nid=(request.user.id+3*post.thread_no)%max_nid+1).name
     if request.user.id>max_nid:
         nickname = nickname + str(request.user.id/max_nid+1)
+    post.num_read+=1
+    post.save()
     return render(request, 'blog/post_detail.html',{'post':post, 'nickname':nickname, 'user':request.user, 'form':CommentForm()})
 
 @login_required
