@@ -16,6 +16,7 @@
             {% if user.is_authenticated %}
                 <a href="{% url 'post_new' %}" class="top-menu"><span class="glyphicon glyphicon-plus"></span></a>
                 <a href="{% url 'logout' %}" class="top-menu"><span class="glyphicon glyphicon-log-out"></span></a>
+                <a href="{% url 'password_reset' %}" class="top-menu"><span class="glyphicon glyphicon-cog"></span></a>
                 Prototype, All Rights Reserved. Logged in as: {{ user.username }}
             {% else %}
                 <a href="{% url 'login' %}" class="top-menu"><span class="glyphicon glyphicon-lock"></span></a>
