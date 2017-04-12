@@ -5,14 +5,14 @@ from .models import Post, Comment, Nickname
 from .forms import PostForm, CommentForm
 from django.contrib.auth.decorators import login_required
 
-def get_nickname(user_id, thread_no):
+def get_nickname(user, thread_no):
     max_nid = Nickname.objects.aggregate(Max('nid'))['nid__max']
-    if user_id==1:
+    if user.username == "admin":
         nickname = Nickname.objects.get(nid=0).name
     else:
-        nickname = Nickname.objects.get(nid=(user_id+3*thread_no)%max_nid+1).name
-    if user_id>max_nid:
-        nickname = nickname + str(user_id/max_nid+1)
+        nickname = Nickname.objects.get(nid=(user.id+3*thread_no)%max_nid+1).name
+    if user.id>max_nid:
+        nickname = nickname + str(user.id/max_nid+1)
     return nickname
 
 @login_required
@@ -28,13 +28,13 @@ def board(request):
 def thread(request, pk):
     post = get_object_or_404(Post, pk=pk) 
     posts = Post.objects.filter(thread_no=post.thread_no).order_by('created_date')
-    nickname = get_nickname(request.user.id,post.thread_no)
+    nickname = get_nickname(request.user,post.thread_no)
     return render(request, 'blog/thread.html', {'posts':posts, 'nickname':nickname})
 
 @login_required
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    nickname = get_nickname(request.user.id,post.thread_no)
+    nickname = get_nickname(request.user,post.thread_no)
     post.num_read+=1
     post.save()
     return render(request, 'blog/post_detail.html', {'post':post, 'nickname':nickname, 'user':request.user, 'form':CommentForm()})
@@ -52,7 +52,7 @@ def post_new(request):
                 post.thread_no = 0
             else:
                 post.thread_no = Post.objects.aggregate(Max('thread_no'))['thread_no__max']+1
-            post.nickname = get_nickname(request.user.id,post.thread_no)
+            post.nickname = get_nickname(request.user,post.thread_no)
             post.save()
             return redirect('post_detail', pk=post.pk)
     else:
@@ -84,7 +84,7 @@ def post_reply(request, pk):
             post.author = request.user
             post.published_date = timezone.now()
             post.thread_no = parent_post.thread_no
-            post.nickname = get_nickname(request.user.id,post.thread_no)
+            post.nickname = get_nickname(request.user,post.thread_no)
             post.save()
             return redirect('post_detail', pk=post.pk)
     else:
@@ -115,7 +115,7 @@ def add_comment_to_post(request, pk):
             comment = form.save(commit=False)
             comment.author = request.user
             comment.post = post
-            comment.nickname = get_nickname(request.user.id,post.thread_no)
+            comment.nickname = get_nickname(request.user,post.thread_no)
             if "Save" in request.POST:
                 post.num_user_comment+=1
                 post.comment_cnt+=1

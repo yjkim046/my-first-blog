@@ -29,14 +29,14 @@
     </tr>
     {% for post in posts %}
         <tr>
-        <td>{% if user.id == 1 and post.num_user_report %}
+        <td>{% if user.username == "admin" and post.num_user_report %}
                 <span class="redtext">#{{ post.id }}</span>
             {% else %}
                 #{{ post.id }}
             {% endif %}</td>
         <td>{{ post.thread_no }}</td>
         <td><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }} [{{ post.num_user_comment }}]
-            {% if user.id == 1 %}
+            {% if user.username == "admin" %}
                 [{{ post.num_user_report }}]
             {% endif %}</a></td>
         <td>{{ post.nickname }}</td>
