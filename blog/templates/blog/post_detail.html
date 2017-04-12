@@ -12,7 +12,7 @@
         <h3>#{{ post.id }} {{ post.title }}</h3>
         {% if post.published_date %}
             <div class="date">
-                {{ post.published_date|date:"M d,f a" }}
+                {{ post.published_date|date:"M d,g:i a" }}
             </div>
         {% endif %}
         <div class="date"> Read:{{ post.num_read }}&nbsp</div>
@@ -40,24 +40,38 @@
 <hr>
 {% for comment in post.comments.all %}
     {% if user.is_authenticated %}
-    <div class="comment-header">
-        <span class="comment_id"> #{{ comment.within_post_id }} </span>
-        by {{ comment.nickname }}
-        <div class="date">
-            {{ comment.created_date|date:"M d,f a" }}
-            {% if comment.author == user.username %} 
-                <a href="{% url 'comment_remove' pk=comment.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
-            {% endif %}
+        {% if comment.within_post_id %}
+        <div class="comment-header">
+            <span class="comment_id"> #{{ comment.within_post_id }} </span>
+            by {{ comment.nickname }}
+            <div class="date">
+                {{ comment.created_date|date:"M d,g:i a" }}
+                {% if comment.author == user.username %} 
+                    <a href="{% url 'comment_remove' pk=comment.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
+                {% endif %}
+            </div>
+            <div class="comment">{% autoescape off %}{{ comment.text|linebreaks }}{% endautoescape %}</div>
         </div>
-    </div>
-    <div class="comment">{% autoescape off %}{{ comment.text|linebreaks }}{% endautoescape %}</div>
+        {% else %}
+            {% if user.id == 1 %}
+            <div class="comment-header">
+                <span class="comment_id"> #{{ comment.within_post_id }} </span>
+                by {{ comment.nickname }}
+                <div class="date">
+                    {{ comment.created_date|date:"M d,g:i a" }}
+                    <a href="{% url 'comment_remove' pk=comment.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
+            </div>
+            <div class="comment">{% autoescape off %}{{ comment.text|linebreaks }}{% endautoescape %}</div>
+            {% endif %}
+        {% endif %}
     {% endif %}
 {% endfor %}
 {% if form %}
     <form id="comment-form" action="{% url 'add_comment_to_post' pk=post.pk %}" method="POST">
     {% csrf_token %}
-    Comment: <input type='text' style="width: 80%" name="text" required>
-    <input type='submit' value='Save'>
+    Comment: <input type="text" style="width: 80%" name="text" required>
+    <input type="submit" value="Save" name="Save">
+    <input type="submit" value="Report" name="Report">
     </form> 
 {% else %}
     CommentForm is not found!

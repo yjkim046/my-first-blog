@@ -12,6 +12,9 @@
         text-align: center;
         padding: 8px;
     }
+    .redtext {
+            color: red;
+    }
     </style>
     <table>
     <tr>
@@ -26,11 +29,18 @@
     </tr>
     {% for post in posts %}
         <tr>
-        <td>#{{ post.id }}&nbsp</td>
-        <td>{{ post.thread_no }}&nbsp</td>
-        <td><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }} [{{ post.comments.count }}]</a>&nbsp</td>
-        <td>{{ post.nickname }}&nbsp</td>
-        <td>{{ post.created_date|date:"m/d/Y"}}&nbsp</td>
+        <td>{% if user.id == 1 and post.num_user_report %}
+                <span class="redtext">#{{ post.id }}</span>
+            {% else %}
+                #{{ post.id }}
+            {% endif %}</td>
+        <td>{{ post.thread_no }}</td>
+        <td><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }} [{{ post.num_user_comment }}]
+            {% if user.id == 1 %}
+                [{{ post.num_user_report }}]
+            {% endif %}</a></td>
+        <td>{{ post.nickname }}</td>
+        <td>{{ post.created_date|date:"m/d/Y"}}</td>
         <td>{{ post.published_date|date:"m/d/Y"}}</td>
         <td>{{ post.num_recommendation }}
         <td>{{ post.num_read }}
